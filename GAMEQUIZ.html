@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IT QUEST 2D - Petualangan Teknologi</title>
+
+<style>
+:root {
+    --bg: #0c1930;
+    --panel: #142742;
+    --panel-light: #1d3554;
+    --blue: #62c7f5;
+    --yellow: #ffd166;
+    --white: #f4f7ff;
+    --muted: #a9bbd2;
+    --green: #43d9a3;
+    --red: #ff7185;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: Arial, sans-serif;
+    color: var(--white);
+    background:
+        radial-gradient(circle at top left, #214e77, transparent 38%),
+        linear-gradient(140deg, #091426, #173d66);
+}
+
+button {
+    font-family: inherit;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+}
+
+button:focus-visible {
+    outline: 3px solid var(--blue);
+    outline-offset: 3px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.game {
+    width: 100%;
+    max-width: 900px;
+    min-height: 570px;
+    background: var(--panel);
+    border: 1px solid #35516f;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px #0005;
+}
+
+.top-line {
+    height: 7px;
+    background: linear-gradient(
+        90deg, var(--blue), #9185ff, var(--yellow)
+    );
+}
+
+.screen {
+    padding: 32px;
+    animation: fadeIn 0.35s ease;
+}
+
+.brand {
+    font-size: 29px;
+    font-weight: 900;
+    letter-spacing: 1px;
+}
+
+.brand span {
+    color: var(--blue);
+}
+
+.subtitle {
+    color: var(--muted);
+    line-height: 1.7;
+}
+
+.eyebrow {
+    color: var(--blue);
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+}
+
+h1 {
+    font-size: clamp(30px, 5vw, 43px);
+    line-height: 1.2;
+}
+
+h2 {
+    line-height: 1.45;
+}
+
+.start-screen {
+    text-align: center;
+    padding-top: 40px;
+    padding-bottom: 40px;
+}
+
+.hero-art {
+    width: 190px;
+    height: 165px;
+    margin: 25px auto;
+    border-radius: 35px;
+    background: linear-gradient(140deg, #69d9f4, #7778e9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 76px;
+    box-shadow: 0 15px 40px #4d9fdf35;
+    animation: float 3s ease-in-out infinite;
+    position: relative;
+}
+
+.hero-art::before {
+    content: "✦";
+    position: absolute;
+    top: -12px;
+    right: -15px;
+    color: var(--yellow);
+    font-size: 35px;
+}
+
+.hero-art::after {
+    content: "✧";
+    position: absolute;
+    bottom: -12px;
+    left: -15px;
+    color: var(--blue);
+    font-size: 35px;
+}
+
+.primary {
+    padding: 14px 25px;
+    border: none;
+    border-radius: 12px;
+    background: var(--yellow);
+    color: #182740;
+    font-weight: bold;
+    font-size: 15px;
+}
+
+.info-row {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 25px 0;
+}
+
+.info-chip {
+    background: #1c3451;
+    border: 1px solid #34516f;
+    border-radius: 30px;
+    padding: 10px 14px;
+    font-size: 13px;
+}
+
+.info-chip strong {
+    color: var(--yellow);
+}
+
+.game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.small-brand {
+    font-weight: 900;
+    font-size: 19px;
+}
+
+.score-box {
+    padding: 10px 15px;
+    border: 1px solid #3b5876;
+    background: #1c3553;
+    border-radius: 12px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+#skor {
+    color: var(--yellow);
+}
+
+.progress-info {
+    display: flex;
+    justify-content: space-between;
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.progress-track {
+    height: 8px;
+    background: #2a3d57;
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 25px;
+}
+
+.progress-fill {
+    width: 0;
+    height: 100%;
+    background: linear-gradient(90deg, var(--blue), #a0a1ff);
+    transition: width 0.4s;
+}
+
+.category {
+    display: inline-block;
+    padding: 8px 12px;
+    border-radius: 20px;
+    background: #183b50;
+    color: var(--blue);
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+}
+
+.question {
+    font-size: clamp(20px, 3vw, 27px);
+    margin: 10px 0 22px;
+}
+
+.answers {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.answer {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-align: left;
+    min-height: 72px;
+    padding: 14px;
+    border: 1px solid #36516e;
+    border-radius: 14px;
+    color: var(--white);
+    background: #1b304c;
+    font-size: 15px;
+}
+
+.answer:hover {
+    background: #294765;
+    border-color: var(--blue);
+}
+
+.letter {
+    min-width: 35px;
+    height: 35px;
+    display: grid;
+    place-items: center;
+    border-radius: 10px;
+    background: #10213a;
+    color: var(--blue);
+    font-weight: bold;
+}
+
+.answer.correct {
+    background: #16473e;
+    border-color: var(--green);
+}
+
+.answer.wrong {
+    background: #492a3b;
+    border-color: var(--red);
+}
+
+.answer:disabled {
+    cursor: default;
+    transform: none;
+}
+
+.feedback {
+    padding: 14px 16px;
+    margin-top: 20px;
+    border-radius: 12px;
+    line-height: 1.6;
+    background: #1b3451;
+    border: 1px solid #36516f;
+}
+
+.feedback.good {
+    background: #143c35;
+    border-color: var(--green);
+}
+
+.feedback.bad {
+    background: #422638;
+    border-color: var(--red);
+}
+
+/* Tampilan tebak gambar */
+
+.picture-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.picture-option {
+    min-height: 145px;
+    border-radius: 17px;
+    padding: 15px 10px;
+    border: 1px solid #36516e;
+    color: var(--white);
+    background: #1b304c;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-weight: bold;
+}
+
+.picture-option:hover {
+    background: #294765;
+    border-color: var(--blue);
+}
+
+.picture {
+    width: 75px;
+    height: 70px;
+    display: grid;
+    place-items: center;
+    border-radius: 16px;
+    background: linear-gradient(145deg, #d8f5ff, #a3c7ff);
+    font-size: 43px;
+}
+
+.picture-option.correct {
+    border: 2px solid var(--green);
+    background: #16473e;
+}
+
+.picture-option.wrong {
+    border: 2px solid var(--red);
+    background: #492a3b;
+}
+
+.picture-option:disabled {
+    cursor: default;
+    transform: none;
+}
+
+.hint {
+    padding: 13px 15px;
+    background: #1b3551;
+    border-left: 4px solid var(--yellow);
+    border-radius: 8px;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 18px;
+}
+
+.navigation {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 24px;
+    flex-wrap: wrap;
+}
+
+.secondary {
+    padding: 12px 17px;
+    background: #203b59;
+    color: white;
+    border: 1px solid #45617e;
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+.result-screen {
+    text-align: center;
+}
+
+.trophy {
+    font-size: 75px;
+    margin: 20px 0;
+    animation: float 3s infinite;
+}
+
+.final-score {
+    color: var(--yellow);
+    font-size: 55px;
+    font-weight: 900;
+    margin: 15px 0;
+}
+
+.review {
+    text-align: left;
+    margin-top: 25px;
+}
+
+.review-item {
+    padding: 15px;
+    margin-bottom: 12px;
+    background: #1b304c;
+    border: 1px solid #36516e;
+    border-radius: 12px;
+    overflow-wrap: anywhere;
+}
+
+.review-item p {
+    color: var(--muted);
+    line-height: 1.6;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-9px); }
+}
+
+@media (max-width: 600px) {
+    body {
+        padding: 10px;
+    }
+
+    .game {
+        border-radius: 18px;
+    }
+
+    .screen {
+        padding: 21px 16px;
+    }
+
+    .answers,
+    .picture-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .picture-option {
+        min-height: 115px;
+        flex-direction: row;
+        justify-content: flex-start;
+        padding-left: 20px;
+    }
+
+    .picture {
+        flex-shrink: 0;
+    }
+
+    .game-header {
+        align-items: flex-start;
+    }
+
+    .small-brand {
+        font-size: 16px;
+    }
+
+    .score-box {
+        font-size: 13px;
+        padding: 9px 10px;
+    }
+}
+</style>
+</head>
+
+<body>
+<main class="game">
+<div class="top-line"></div>
+
+<!-- HALAMAN AWAL -->
+<section id="halamanAwal" class="screen start-screen">
+    <div class="brand">🎮 IT <span>QUEST</span> 2D</div>
+    <p class="eyebrow">Petualangan Edukasi</p>
+    <h1>Jelajahi Dunia<br>Teknologi Informasi</h1>
+
+    <div class="hero-art">🕹️</div>
+
+    <p class="subtitle">
+        Jawab pertanyaan, tebak gambar, dan kumpulkan poin
+        untuk menyelesaikan misi teknologi!
+    </p>
+
+    <div class="info-row">
+        <div class="info-chip"><strong>05</strong> Pilihan Ganda</div>
+        <div class="info-chip"><strong>05</strong> Tebak Gambar</div>
+        <div class="info-chip"><strong>100</strong> Poin Maksimal</div>
+    </div>
+
+    <button class="primary" onclick="mulaiGame()">
+        ▶ Mulai Game
+    </button>
+</section>
+
+<!-- HALAMAN SOAL -->
+<section id="halamanGame" class="screen hidden">
+    <div class="game-header">
+        <div class="small-brand">🎮 IT <span style="color:var(--blue)">QUEST</span> 2D</div>
+        <div class="score-box">⭐ Skor: <span id="skor">0</span></div>
+    </div>
+
+    <div class="progress-info">
+        <span id="nomor">SOAL 1 DARI 10</span>
+        <span id="persen">0%</span>
+    </div>
+
+    <div class="progress-track">
+        <div id="progress" class="progress-fill"></div>
+    </div>
+
+    <div id="kategori" class="category">PILIHAN GANDA</div>
+    <h2 id="pertanyaan" class="question"></h2>
+
+    <div id="petunjuk" class="hint hidden"></div>
+    <div id="jawaban"></div>
+    <div id="hasil" class="feedback hidden" aria-live="polite"></div>
+
+    <div class="navigation">
+        <button class="secondary" onclick="keluarGame()">
+            ← Keluar
+        </button>
+
+        <button id="tombolLanjut" class="primary hidden"
+                onclick="soalBerikutnya()">
+            Soal Berikutnya →
+        </button>
+    </div>
+</section>
+
+<!-- HALAMAN HASIL -->
+<section id="halamanHasil" class="screen result-screen hidden">
+    <p class="eyebrow">Misi telah selesai</p>
+    <div class="trophy">🏆</div>
+    <h1>Petualangan Selesai!</h1>
+    <p class="subtitle">
+        Semua tantangan sudah dilewati. Terus tingkatkan pengetahuan
+        tentang teknologi informasi!
+    </p>
+
+    <div id="nilaiAkhir" class="final-score">0 / 100</div>
+    <h3 id="pesanAkhir">Terus belajar!</h3>
+    <p id="detailAkhir" class="subtitle"></p>
+
+    <button class="primary" onclick="mainLagi()">
+        ↻ Main Lagi
+    </button>
+
+    <button id="tombolRingkasan" class="secondary"
+            onclick="lihatRingkasan()">
+        Lihat Jawaban
+    </button>
+
+    <div id="ringkasan" class="review hidden"></div>
+</section>
+</main>
+
+<script>
+const soal = [
+    {
+        jenis: "ganda",
+        tanya: "Apa otak utama komputer?",
+        opsi: ["Monitor", "CPU", "Mouse", "Speaker"],
+        benar: 1,
+        penjelasan: "CPU memproses instruksi dan data komputer."
+    },
+    {
+        jenis: "ganda",
+        tanya: "Manakah contoh perangkat lunak?",
+        opsi: ["Keyboard", "Monitor", "Sistem operasi", "Mouse"],
+        benar: 2,
+        penjelasan: "Sistem operasi merupakan software yang mengelola komputer."
+    },
+    {
+        jenis: "ganda",
+        tanya: "Apa fungsi utama browser?",
+        opsi: [
+            "Membuka halaman web",
+            "Mencetak kertas",
+            "Mengisi baterai",
+            "Membersihkan komputer"
+        ],
+        benar: 0,
+        penjelasan: "Browser digunakan untuk membuka dan menjelajahi halaman web."
+    },
+    {
+        jenis: "ganda",
+        tanya: "Bagaimana menghadapi tautan mencurigakan?",
+        opsi: [
+            "Langsung dibuka",
+            "Bagikan kata sandi",
+            "Periksa sumbernya",
+            "Kirim ke semua teman"
+        ],
+        benar: 2,
+        penjelasan: "Periksa alamat dan sumber tautan sebelum membukanya."
+    },
+    {
+        jenis: "ganda",
+        tanya: "Apa itu bahasa pemrograman?",
+        opsi: [
+            "Perangkat keras",
+            "Bahasa untuk memberi instruksi komputer",
+            "Jenis monitor",
+            "Jaringan listrik"
+        ],
+        benar: 1,
+        penjelasan: "Bahasa pemrograman dipakai untuk menulis instruksi komputer."
+    },
+
+    // 5 soal berikut menggunakan konsep tebak gambar
+    {
+        jenis: "gambar",
+        tanya: "Tebak gambar: mana yang termasuk HARDWARE?",
+        petunjuk: "Hardware adalah bagian komputer yang memiliki bentuk fisik dan dapat disentuh.",
+        gambar: [
+            { ikon: "⌨️", nama: "Keyboard", benar: true },
+            { ikon: "🌐", nama: "Internet", benar: false },
+            { ikon: "🪟", nama: "Sistem operasi", benar: false },
+            { ikon: "📄", nama: "Aplikasi", benar: false }
+        ],
+        penjelasan: "Keyboard termasuk hardware karena merupakan perangkat fisik."
+    },
+    {
+        jenis: "gambar",
+        tanya: "Tebak gambar: simbol apa yang menggambarkan INTERNET?",
+        petunjuk: "Internet menghubungkan komputer dan perangkat di seluruh dunia.",
+        gambar: [
+            { ikon: "🔒", nama: "Kunci", benar: false },
+            { ikon: "🌐", nama: "Jaringan global", benar: true },
+            { ikon: "🖨️", nama: "Printer", benar: false },
+            { ikon: "🔋", nama: "Baterai", benar: false }
+        ],
+        penjelasan: "Globe atau jaringan global sering digunakan untuk menggambarkan internet."
+    },
+    {
+        jenis: "gambar",
+        tanya: "Tebak gambar: mana yang melambangkan keamanan kata sandi?",
+        petunjuk: "Kata sandi yang kuat membantu melindungi akun dan data pribadi.",
+        gambar: [
+            { ikon: "🔓", nama: "Gembok terbuka", benar: false },
+            { ikon: "📢", nama: "Pengumuman", benar: false },
+            { ikon: "🔐", nama: "Kunci keamanan", benar: true },
+            { ikon: "🗑️", nama: "Tempat sampah", benar: false }
+        ],
+        penjelasan: "Gembok terkunci melambangkan perlindungan akun dan data."
+    },
+    {
+        jenis: "gambar",
+        tanya: "Tebak gambar: mana yang menggambarkan ALGORITMA?",
+        petunjuk: "Algoritma adalah langkah-langkah logis untuk menyelesaikan masalah.",
+        gambar: [
+            { ikon: "🎲", nama: "Permainan dadu", benar: false },
+            { ikon: "🧩", nama: "Langkah pemecahan masalah", benar: true },
+            { ikon: "🎧", nama: "Headphone", benar: false },
+            { ikon: "📷", nama: "Kamera", benar: false }
+        ],
+        penjelasan: "Algoritma tersusun dari langkah yang teratur untuk mencapai hasil."
+    },
+    {
+        jenis: "gambar",
+        tanya: "Tebak gambar: mana contoh manfaat TI di kampus?",
+        petunjuk: "Teknologi informasi membantu mahasiswa belajar dan mengakses layanan kampus.",
+        gambar: [
+            { ikon: "🎮", nama: "Bermain saja", benar: false },
+            { ikon: "🚗", nama: "Transportasi", benar: false },
+            { ikon: "🍔", nama: "Makanan", benar: false },
+            { ikon: "💻", nama: "Pembelajaran daring", benar: true }
+        ],
+        penjelasan: "Pembelajaran daring dan sistem akademik merupakan manfaat TI di kampus."
+    }
+];
+
+let nomorSoal = 0;
+let skor = 0;
+let sudahDijawab = false;
+let jawabanPemain = [];
+let jumlahGandaBenar = 0;
+let jumlahGambarBenar = 0;
+
+function tampilkanHalaman(id) {
+    ["halamanAwal", "halamanGame", "halamanHasil"].forEach(function(halaman) {
+        document.getElementById(halaman).classList.add("hidden");
+    });
+
+    document.getElementById(id).classList.remove("hidden");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function mulaiGame() {
+    nomorSoal = 0;
+    skor = 0;
+    sudahDijawab = false;
+    jawabanPemain = [];
+    jumlahGandaBenar = 0;
+    jumlahGambarBenar = 0;
+
+    tampilkanHalaman("halamanGame");
+    tampilkanSoal();
+}
+
+function tampilkanSoal() {
+    sudahDijawab = false;
+
+    const s = soal[nomorSoal];
+    const isGambar = s.jenis === "gambar";
+
+    document.getElementById("nomor").textContent =
+        "SOAL " + (nomorSoal + 1) + " DARI " + soal.length;
+
+    document.getElementById("persen").textContent =
+        Math.round(nomorSoal / soal.length * 100) + "%";
+
+    document.getElementById("progress").style.width =
+        (nomorSoal / soal.length * 100) + "%";
+
+    document.getElementById("kategori").textContent =
+        isGambar ? "🖼️ TEBAK GAMBAR" : "◈ PILIHAN GANDA";
+
+    document.getElementById("pertanyaan").textContent =
+        (nomorSoal + 1) + ". " + s.tanya;
+
+    const petunjuk = document.getElementById("petunjuk");
+    petunjuk.classList.toggle("hidden", !isGambar);
+    petunjuk.textContent = isGambar ? "💡 Petunjuk: " + s.petunjuk : "";
+
+    const hasil = document.getElementById("hasil");
+    hasil.className = "feedback hidden";
+    hasil.textContent = "";
+
+    document.getElementById("tombolLanjut").classList.add("hidden");
+
+    if (isGambar) {
+        tampilkanPilihanGambar(s);
+    } else {
+        tampilkanPilihanGanda(s);
+    }
+
+    document.getElementById("skor").textContent = skor;
+}
+
+function tampilkanPilihanGanda(s) {
+    let html = '<div class="answers">';
+
+    s.opsi.forEach(function(opsi, i) {
+        html += `
+            <button class="answer" data-index="${i}"
+                    onclick="pilihGanda(${i})">
+                <span class="letter">${String.fromCharCode(65 + i)}</span>
+                <span>${opsi}</span>
+            </button>`;
+    });
+
+    html += "</div>";
+    document.getElementById("jawaban").innerHTML = html;
+}
+
+function tampilkanPilihanGambar(s) {
+    let html = '<div class="picture-grid">';
+
+    s.gambar.forEach(function(gambar, i) {
+        html += `
+            <button class="picture-option" data-index="${i}"
+                    onclick="pilihGambar(${i})">
+                <span class="picture">${gambar.ikon}</span>
+                <span>${gambar.nama}</span>
+            </button>`;
+    });
+
+    html += "</div>";
+    document.getElementById("jawaban").innerHTML = html;
+}
+
+function pilihGanda(index) {
+    if (sudahDijawab) return;
+
+    const s = soal[nomorSoal];
+    const benar = index === s.benar;
+
+    const tombol = document.querySelectorAll(".answer");
+
+    tombol.forEach(function(btn, i) {
+        btn.disabled = true;
+
+        if (i === s.benar) {
+            btn.classList.add("correct");
+        } else if (i === index) {
+            btn.classList.add("wrong");
+        }
+    });
+
+    jawabanPemain[nomorSoal] = {
+        jawaban: s.opsi[index],
+        benar: benar
+    };
+
+    if (benar) {
+        skor += 10;
+        jumlahGandaBenar++;
+    }
+
+    tampilkanHasilJawaban(benar, s.penjelasan);
+}
+
+function pilihGambar(index) {
+    if (sudahDijawab) return;
+
+    const s = soal[nomorSoal];
+    const gambarDipilih = s.gambar[index];
+    const benar = gambarDipilih.benar;
+
+    const tombol = document.querySelectorAll(".picture-option");
+
+    tombol.forEach(function(btn, i) {
+        btn.disabled = true;
+
+        if (s.gambar[i].benar) {
+            btn.classList.add("correct");
+        } else if (i === index) {
+            btn.classList.add("wrong");
+        }
+    });
+
+    jawabanPemain[nomorSoal] = {
+        jawaban: gambarDipilih.nama,
+        benar: benar
+    };
+
+    if (benar) {
+        skor += 10;
+        jumlahGambarBenar++;
+    }
+
+    tampilkanHasilJawaban(benar, s.penjelasan);
+}
+
+function tampilkanHasilJawaban(benar, penjelasan) {
+    sudahDijawab = true;
+
+    const hasil = document.getElementById("hasil");
+
+    hasil.className = "feedback " + (benar ? "good" : "bad");
+
+    hasil.textContent = benar
+        ? "✅ BENAR! " + penjelasan
+        : "❌ BELUM TEPAT. " + penjelasan;
+
+    document.getElementById("skor").textContent = skor;
+
+    document.getElementById("progress").style.width =
+        ((nomorSoal + 1) / soal.length * 100) + "%";
+
+    document.getElementById("persen").textContent =
+        Math.round((nomorSoal + 1) / soal.length * 100) + "%";
+
+    const lanjut = document.getElementById("tombolLanjut");
+    lanjut.textContent = nomorSoal === soal.length - 1
+        ? "Lihat Hasil 🏆"
+        : "Soal Berikutnya →";
+
+    lanjut.classList.remove("hidden");
+}
+
+function soalBerikutnya() {
+    if (!sudahDijawab) return;
+
+    nomorSoal++;
+
+    if (nomorSoal >= soal.length) {
+        tampilkanHasilAkhir();
+        return;
+    }
+
+    tampilkanSoal();
+}
+
+function tampilkanHasilAkhir() {
+    tampilkanHalaman("halamanHasil");
+
+    document.getElementById("nilaiAkhir").textContent =
+        skor + " / 100";
+
+    let pesan;
+
+    if (skor >= 90) {
+        pesan = "🌟 Hebat! Pengetahuan TI kamu sangat baik!";
+    } else if (skor >= 70) {
+        pesan = "👏 Bagus! Terus tingkatkan kemampuanmu!";
+    } else if (skor >= 50) {
+        pesan = "💪 Lumayan! Ayo belajar dan coba lagi!";
+    } else {
+        pesan = "🚀 Jangan menyerah! Setiap percobaan adalah belajar.";
+    }
+
+    document.getElementById("pesanAkhir").textContent = pesan;
+
+    document.getElementById("detailAkhir").textContent =
+        "Pilihan ganda benar: " + jumlahGandaBenar + "/5. " +
+        "Tebak gambar benar: " + jumlahGambarBenar + "/5.";
+
+    buatRingkasan();
+}
+
+function buatRingkasan() {
+    let html = "<h2>Ringkasan Jawaban</h2>";
+
+    soal.forEach(function(s, i) {
+        const data = jawabanPemain[i];
+        const jawaban = data ? data.jawaban : "Tidak dijawab";
+        const status = data && data.benar ? "✅ Benar" : "❌ Salah";
+
+        const kunci = s.jenis === "ganda"
+            ? s.opsi[s.benar]
+            : s.gambar.find(function(g) {
+                return g.benar;
+            }).nama;
+
+        html += `
+            <div class="review-item">
+                <strong>${i + 1}. ${s.tanya}</strong>
+                <p>Jawaban pemain: ${aman(jawaban)}</p>
+                <p>Kunci jawaban: ${aman(kunci)}</p>
+                <strong>${status}</strong>
+            </div>`;
+    });
+
+    document.getElementById("ringkasan").innerHTML = html;
+}
+
+function aman(teks) {
+    return String(teks).replace(/[&<>"']/g, function(karakter) {
+        return {
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;"
+        }[karakter];
+    });
+}
+
+function lihatRingkasan() {
+    const ringkasan = document.getElementById("ringkasan");
+    const tombol = document.getElementById("tombolRingkasan");
+
+    ringkasan.classList.toggle("hidden");
+
+    tombol.textContent = ringkasan.classList.contains("hidden")
+        ? "Lihat Jawaban"
+        : "Sembunyikan Jawaban";
+}
+
+function mainLagi() {
+    document.getElementById("ringkasan").classList.add("hidden");
+    document.getElementById("tombolRingkasan").textContent = "Lihat Jawaban";
+    tampilkanHalaman("halamanAwal");
+}
+
+function keluarGame() {
+    const yakin = confirm(
+        "Kembali ke halaman awal? Progres permainan akan dihapus."
+    );
+
+    if (yakin) {
+        tampilkanHalaman("halamanAwal");
+    }
+}
+</script>
+</body>
+</html>
